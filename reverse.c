@@ -1,4 +1,0 @@
-
-char *zap(char *line) {
-
-}
