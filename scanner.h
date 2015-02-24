@@ -7,21 +7,27 @@
 
 */
 
+#include <iostream>
+#include <stdio.h>
 #include <fstream>
 #include <String>
+
+typedef unsigned char BYTE;
 
 class Scanner
 {
 
 private:
-	std::string file_name;
-	std::ofstream raw_source_file;
-	
+	const char *filePath;							// file_path
+	BYTE *fileBuf;
+	int line_num;
+	int col_num;
+	long fileSize;
 
 public:
-	Scanner(std::string f_n);
-	~Scanner();
-	
+	Scanner(char *f_p);								// constructor
+	~Scanner();										// destructor
+
 	void read_next();
 	void print();
 

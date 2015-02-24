@@ -1,1 +1,33 @@
-This project will be about constructing the pascal compiler in C++ from scratch.
+Pascal Compiler
+---------------
+
+This project will be about constructing the pascal compiler in C++ from scratch. I will write the details of how I built the compiler from beginning to the end.
+
+Overview
+---------
+
+What is a compiler?
+A translator that transforms source code/program to assemblycode/anotherlanguage/binary and probably alors of other things that I didn't mention.
+
+How does a compiler work?
+The first module of a compiler is the Scanner. The Scanner will read the file one character at a time. It can also keep track of which line number and character is currently being read. The next module is the Lexer that break up the source file into token, which are sequences of characters that have a collective meaning. 
+
+Example of lexical analysis:
+int a;
+a = a + 2;
+
+A lexical analyzer scanning the code fragment above might return: 
+int T_INT (reserved word)
+a T_IDENTIFIER (variable name)
+; T_SPECIAL (special symbol with value of ";")
+a T_IDENTIFIER (variable name)
+= T_OP (operator with value of  "=")
+a T_IDENTIFIER (variable name)
++ T_OP (operator with value of  "+")
+2 T_INTCONSTANT (integer constant with value of 2)
+; T_SPECIAL (special symbol with value of ";")
+
+References:
+CSc 143: Compilers
+http://web.stanford.edu/class/archive/cs/cs143/cs143.1128/
+

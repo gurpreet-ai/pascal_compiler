@@ -1,0 +1,4 @@
+
+char *zap(char *line) {
+
+}
