@@ -3,14 +3,11 @@ DEBUG = -g
 CFLAGS = -Wall -c $(DEBUG)
 LFLAGS = -Wall $(DEBUG)
 
-driver: driver.o scanner.o
-	$(CC) driver.o scanner.o -o driver
+main: main.cpp scanner.o
+	$(CC) main.cpp -o main
 
-driver.o: driver.cpp
-	$(CC) $(CFLAGS) driver.cpp
-
-scanner.o: scanner.h scanner.cpp
-	$(CC) $(CFLAGS) scanner.cpp
+scanner.o : scanner.cpp token.h
+	$(CC) -c scanner.cpp
 
 clean:
-	rm -rf *.o driver
+	rm -rf *.o main
