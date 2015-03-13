@@ -3,11 +3,14 @@ DEBUG = -g
 CFLAGS = -Wall -c $(DEBUG)
 LFLAGS = -Wall $(DEBUG)
 
-main: main.cpp scanner.o
-	$(CC) main.cpp -o main
+main: main.o scanner.o
+	$(CC) main.o scanner.o -o main
 
-scanner.o : scanner.cpp token.h
-	$(CC) -c scanner.cpp
+main.o: main.cpp
+	$(CC) $(CFLAGS) main.cpp
+
+scanner.o: scanner.h token.h scanner.cpp
+	$(CC) $(CFLAGS) scanner.cpp
 
 clean:
-	rm -rf *.o main
+	rm -rf *.o *.gch main

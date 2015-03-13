@@ -2,9 +2,8 @@
 #include <locale>
 #include <string>
 #include "token.h"
+#include "scanner.h"
 using namespace std;
-
-typedef unsigned char BYTE;												// unsigned char can store 1 Bytes (8bits) of data (0-255)
 
 // return the TokenType associated with the scanned
 // identi, keyword, operator....

@@ -7,28 +7,6 @@
 
 */
 
-#include <iostream>
-#include <stdio.h>
-#include <fstream>
-#include <String>
+typedef unsigned char BYTE;												// unsigned char can store 1 Bytes (8bits) of data (0-255)
 
-typedef unsigned char BYTE;
-
-class Scanner
-{
-
-private:
-	const char *filePath;							// file_path
-	BYTE *fileBuf;
-	int line_num;
-	int col_num;
-	long fileSize;
-
-public:
-	Scanner(char *f_p);								// constructor
-	~Scanner();										// destructor
-
-	void read_next();
-	void print();
-
-};
+TokenType getToken(BYTE *&filePtr);

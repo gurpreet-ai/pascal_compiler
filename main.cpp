@@ -3,7 +3,7 @@
 #include <iostream>
 #include <string>
 #include "token.h"
-#include "scanner.cpp"
+#include "scanner.h"
 
 using namespace std;
 
