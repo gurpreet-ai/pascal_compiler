@@ -1,7 +1,5 @@
-program sum_a_b;
-
+program sumab;
 var a, b, sum: Integer;
-
 begin
 	a := 2;
 	b := 2;

@@ -87,6 +87,20 @@ Token getToken(BYTE *&filePtr, int &line_num, int &col_num) {
 				"BREAK", "FUNCTION", "TYPE", "UNTIL", "LABEL", "VAR"
 			};
 
+			if (*filePtr == '.') {
+				if (build_string == "END") {
+					build_string += *filePtr;
+					tk.token_Name = build_string;
+					tk.line_num = line_num;
+					tk.col_num = col_num;
+					filePtr++;
+				}
+			} else {
+				tk.token_Name = build_string;
+				tk.line_num = line_num;
+				tk.col_num = col_num;
+			}
+
 			tk.token_Name = build_string;
 			tk.line_num = line_num;
 			tk.col_num = col_num;
@@ -103,7 +117,7 @@ Token getToken(BYTE *&filePtr, int &line_num, int &col_num) {
 						tk.token_Type = TK_BEGIN;
 						return tk;
 					}
-					else if (build_string == "END") {
+					else if (build_string == "END.") {
 						tk.token_Type = TK_END;
 						return tk;
 					}

@@ -20,7 +20,7 @@ int main (int argc, char* argv[]) {
 	// cout << argc <<endl;											// number of arguments
 	// cout << argv[1] <<endl;										// the source file-name
 
-	const char *filePath = "program_testing/assignment.pas";
+	const char *filePath = "program_testing/sum_a_b.pas";
 
 	BYTE *fileBuf;													// pointer to our buffered data
 	FILE *file = NULL;												// file pointer
@@ -52,25 +52,42 @@ int main (int argc, char* argv[]) {
 	
 	Token tk;
 	rewind(file);
-	
-	// SymbolTable symbol_Table;
-	TokenType x = static_cast<TokenType>(5);
-	cout << x << endl;
 
 	cout << "SCANNER" <<endl;
-	cout << "";
-	int line_num = 0, col_num = 0;
+
+	const char separator    = ' ';
+    const int nameWidth     = 15;
+
+	cout << left << setw(nameWidth) << setfill(separator) << "Count";
+    cout << left << setw(nameWidth) << setfill(separator) << "Token Type";
+    cout << left << setw(nameWidth) << setfill(separator) << "Token Name";
+    cout << left << setw(nameWidth) << setfill(separator) << "Line Number";
+    cout << left << setw(nameWidth) << setfill(separator) << "Column Number";
+    cout << endl;
+   
+   	cout << left << setw(nameWidth) << setfill(separator) << setfill('-') << setw(75) << "-";
+    cout << endl;
+
+	int line_num = 1, col_num = 0;
 	int i = 0;
 
 	do {
 		tk = getToken(fileBuf, line_num, col_num);
 		i += 1;
-		cout << i << setw(10) << cout << tk.token_Type << setw(20) << tk.token_Name << setw(20) << tk.line_num << setw(20) << tk.col_num <<endl;
+
+	    cout << left << setw(nameWidth) << setfill(separator) << i;
+	    cout << left << setw(nameWidth) << setfill(separator) << tk.token_Type;
+	    cout << left << setw(nameWidth) << setfill(separator) << tk.token_Name;
+	    cout << left << setw(nameWidth) << setfill(separator) << tk.line_num;
+	    cout << left << setw(nameWidth) << setfill(separator) << tk.col_num;
+
+	    cout << endl;
+
+		//cout << i << setw(10) << cout << tk.token_Type << setw(20) << tk.token_Name << setw(20) << tk.line_num << setw(20) << tk.col_num <<endl;
 
 	} while (tk.token_Type != TK_EOF);
 
 	fclose(file);
-
 
 	cout << endl;
 	return 0;
