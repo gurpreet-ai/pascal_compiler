@@ -3,8 +3,8 @@
 /* define the token types, and a token struct 		*/
 /* ----------------------------------------------- 	*/
 
-#ifndef TOKEN_H 
-#define TOKEN_H 
+#ifndef TOKEN_H
+#define TOKEN_H
 
 #include <iostream>
 #include <locale>

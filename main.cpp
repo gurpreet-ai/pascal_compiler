@@ -6,6 +6,9 @@
 #include "token.h"
 #include "scanner.h"
 #include "sym_table.h"
+#include "node.h"
+#include "util.cpp"
+#include <list>
 
 using namespace std;
 
@@ -13,14 +16,16 @@ typedef unsigned char BYTE;											// unsigned char can store 1 Bytes (8bits)
 
 int main (int argc, char* argv[]) {
 
-	/* ----------------------------------------------- */
-	/* Read the file as binary and place it into a buf */
-	/* ----------------------------------------------- */
-
+	/* ------------------------------------------------------------------------------------------------ */
+	/* -------------------- 											   ---------------------------- */
+	/* 						Read the file as binary and place it into a buf 						    */
+	/* ---------------------												---------------------------	*/
+	/* ------------------------------------------------------------------------------------------------ */
+	
 	// cout << argc <<endl;											// number of arguments
 	// cout << argv[1] <<endl;										// the source file-name
 
-	const char *filePath = "program_testing/sum_a_b.pas";
+	const char *filePath = "program_testing/test.pas";
 
 	BYTE *fileBuf;													// pointer to our buffered data
 	FILE *file = NULL;												// file pointer
@@ -46,46 +51,25 @@ int main (int argc, char* argv[]) {
 	// for (int i = 0; i < fileSize; i++)
 	// 	printf("%X "; fileBuf[i]);
 
-	/* ------------------------------------------------ */
-	/* 					SCANNER 						*/
-	/* ------------------------------------------------	*/
+	/* ------------------------------------------------------------------------------------------------ */
+	/* ---------------------------------				----------------------------------------------- */
+	/* 										SCANNER 						      						*/
+	/* ---------------------------------				----------------------------------------------	*/
+	/* ------------------------------------------------------------------------------------------------ */
 	
 	Token tk;
 	rewind(file);
 
-	cout << "SCANNER" <<endl;
-
-	const char separator    = ' ';
-    const int nameWidth     = 15;
-
-	cout << left << setw(nameWidth) << setfill(separator) << "Count";
-    cout << left << setw(nameWidth) << setfill(separator) << "Token Type";
-    cout << left << setw(nameWidth) << setfill(separator) << "Token Name";
-    cout << left << setw(nameWidth) << setfill(separator) << "Line Number";
-    cout << left << setw(nameWidth) << setfill(separator) << "Column Number";
-    cout << endl;
-   
-   	cout << left << setw(nameWidth) << setfill(separator) << setfill('-') << setw(75) << "-";
-    cout << endl;
-
 	int line_num = 1, col_num = 0;
-	int i = 0;
+	
+	std::list<Token> token_list;
 
 	do {
 		tk = getToken(fileBuf, line_num, col_num);
-		i += 1;
-
-	    cout << left << setw(nameWidth) << setfill(separator) << i;
-	    cout << left << setw(nameWidth) << setfill(separator) << tk.token_Type;
-	    cout << left << setw(nameWidth) << setfill(separator) << tk.token_Name;
-	    cout << left << setw(nameWidth) << setfill(separator) << tk.line_num;
-	    cout << left << setw(nameWidth) << setfill(separator) << tk.col_num;
-
-	    cout << endl;
-
-		//cout << i << setw(10) << cout << tk.token_Type << setw(20) << tk.token_Name << setw(20) << tk.line_num << setw(20) << tk.col_num <<endl;
-
+		token_list.push_back(tk);
 	} while (tk.token_Type != TK_EOF);
+
+	print_scanner_output(token_list);									// util.cpp - print the scanner output
 
 	fclose(file);
 
