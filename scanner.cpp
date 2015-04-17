@@ -62,8 +62,8 @@ Token getToken(BYTE *&filePtr, int &line_num, int &col_num) {
 				return tk;												// throw an error
 			}
 
-			tk.token_Name = build_string;
 			tk.token_Type = TK_STR_LIT;
+			tk.token_Name = build_string;
 			tk.line_num = line_num;
 			tk.col_num = col_num;
 
@@ -84,7 +84,7 @@ Token getToken(BYTE *&filePtr, int &line_num, int &col_num) {
 			string KEYWORDS [] = {										// list of keywords in pascal
 				"PROGRAM", "BEGIN", "END.", "PROCEDURE", "IF", "THEN", "ELSE",
 				"FOR", "WHILE", "DO", "AND", "OR", "NOT", "REPEAT",
-				"BREAK", "FUNCTION", "TYPE", "UNTIL", "LABEL", "VAR"
+				"BREAK", "FUNCTION", "TYPE", "UNTIL", "LABEL", "VAR", "INTEGER", "REAL"
 			};
 
 			if (*filePtr == '.') {
@@ -95,7 +95,8 @@ Token getToken(BYTE *&filePtr, int &line_num, int &col_num) {
 					tk.col_num = col_num;
 					filePtr++;
 				}
-			} else {
+			}
+			else {
 				tk.token_Name = build_string;
 				tk.line_num = line_num;
 				tk.col_num = col_num;
@@ -111,6 +112,10 @@ Token getToken(BYTE *&filePtr, int &line_num, int &col_num) {
 				if (KEYWORDS[k] == build_string) {
 					if (build_string == "PROGRAM") {
 						tk.token_Type = TK_PROGRAM;
+						return tk;
+					} 
+					else if (build_string == "VAR") {
+						tk.token_Type = TK_VAR;
 						return tk;
 					}
 					else if (build_string == "BEGIN") {
@@ -147,6 +152,14 @@ Token getToken(BYTE *&filePtr, int &line_num, int &col_num) {
 					}
 					else if (build_string == "DO") {
 						tk.token_Type = TK_DO;
+						return tk;
+					}
+					else if (build_string == "REAL") {
+						tk.token_Type = TK_REAL;
+						return tk;
+					}
+					else if (build_string == "INTEGER") {
+						tk.token_Type = TK_INT;
 						return tk;
 					}
 					else if (build_string == "AND") {
@@ -237,6 +250,13 @@ Token getToken(BYTE *&filePtr, int &line_num, int &col_num) {
 					tk.token_Type = TK_ASSIGNMENT;
 					filePtr++;
 					return tk;
+				} else {
+					col_num += 1;
+					tk.token_Name = ':';
+					tk.line_num = line_num;
+					tk.col_num = col_num;
+					tk.token_Type = TK_COLON;
+					return tk;
 				}
 			}
 			case '+':	{
@@ -326,6 +346,15 @@ Token getToken(BYTE *&filePtr, int &line_num, int &col_num) {
 				tk.line_num = line_num;
 				tk.col_num = col_num;
 				tk.token_Type = TK_EOF;
+				filePtr++;
+				return tk;
+			}
+			case ',':	{
+				col_num += 1;
+				tk.token_Name = ',';
+				tk.line_num = line_num;
+				tk.col_num = col_num;
+				tk.token_Type = TK_COMMA;
 				filePtr++;
 				return tk;
 			}

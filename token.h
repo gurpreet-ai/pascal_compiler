@@ -30,7 +30,8 @@ typedef enum {
 	TK_WHILE, 	TK_FOR, 	TK_DO, 		TK_REPEAT, 
 	TK_TYPE, 	TK_IF, 		TK_THEN, 	TK_ELSE, 
 	TK_UNTIL, 	TK_FUNCTION, 			TK_BREAK, 
-	TK_LABEL, 	TK_END_CODE,
+	TK_LABEL, 	TK_END_CODE, TK_VAR,	TK_INT,
+	TK_REAL,
 
 	/* ----------------------------------------------- */
 	/*               OPERATORS		                   */
@@ -48,7 +49,7 @@ typedef enum {
 	TK_SEMICOLON, 		TK_OPEN_PAREN,		TK_CLOSE_PAREN,
 	TK_CLOSE_BRACKET,	TK_BEGIN_COMMENT,	TK_END_COMMENT,
     TK_COMMA,			TK_OPEN_BRACKET,	TK_SINGLE_QUOTE,
-    TK_DOUBLE_QUOTE,
+    TK_DOUBLE_QUOTE,	TK_COLON,
 
 	/* ----------------------------------------------- */
 	/*               LITERALS		                   */

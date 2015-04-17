@@ -9,8 +9,8 @@ main: main.o scanner.o
 main.o: main.cpp
 	$(CC) $(CFLAGS) main.cpp
 
-scanner.o: scanner.h token.h scanner.cpp
-	$(CC) $(CFLAGS) scanner.cpp
+scanner.o: scanner.h token.h scanner.cpp parser.cpp
+	$(CC) $(CFLAGS) scanner.cpp parser.cpp
 
 clean:
 	rm -rf *.o *.gch main
