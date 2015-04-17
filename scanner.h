@@ -8,5 +8,4 @@
 */
 
 typedef unsigned char BYTE;												// unsigned char can store 1 Bytes (8bits) of data (0-255)
-
-TokenType getToken(BYTE *&filePtr);
+Token getToken(BYTE *&filePtr, int &line_num, int &col_num);

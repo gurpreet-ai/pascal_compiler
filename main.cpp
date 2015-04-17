@@ -2,8 +2,10 @@
 
 #include <iostream>
 #include <string>
+#include <iomanip>
 #include "token.h"
 #include "scanner.h"
+#include "sym_table.h"
 
 using namespace std;
 
@@ -18,7 +20,7 @@ int main (int argc, char* argv[]) {
 	// cout << argc <<endl;											// number of arguments
 	// cout << argv[1] <<endl;										// the source file-name
 
-	const char *filePath = "test.pas";
+	const char *filePath = "program_testing/assignment.pas";
 
 	BYTE *fileBuf;													// pointer to our buffered data
 	FILE *file = NULL;												// file pointer
@@ -48,22 +50,28 @@ int main (int argc, char* argv[]) {
 	/* 					SCANNER 						*/
 	/* ------------------------------------------------	*/
 	
-	TokenType tokenType = UNDEF;
+	Token tk;
 	rewind(file);
 	
-	// int x = 0;
-	// while ( (tokenType = getTokenType(file, x)) != TK_EOF) {
-	// 	x += 1;
-	// }
-	//fileBuf++;
-	do {
-		tokenType = getToken(fileBuf);
-		cout << " " << tokenType << endl;
-		// printToken();
+	// SymbolTable symbol_Table;
+	TokenType x = static_cast<TokenType>(5);
+	cout << x << endl;
 
-	} while (tokenType != TK_EOF);
+	cout << "SCANNER" <<endl;
+	cout << "";
+	int line_num = 0, col_num = 0;
+	int i = 0;
+
+	do {
+		tk = getToken(fileBuf, line_num, col_num);
+		i += 1;
+		cout << i << setw(10) << cout << tk.token_Type << setw(20) << tk.token_Name << setw(20) << tk.line_num << setw(20) << tk.col_num <<endl;
+
+	} while (tk.token_Type != TK_EOF);
 
 	fclose(file);
+
+
 	cout << endl;
 	return 0;
 }

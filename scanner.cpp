@@ -1,6 +1,7 @@
 #include <iostream>
 #include <locale>
 #include <string>
+#include <iomanip>
 #include "token.h"
 #include "scanner.h"
 using namespace std;
@@ -8,23 +9,34 @@ using namespace std;
 // return the TokenType associated with the scanned
 // identi, keyword, operator....
 
-TokenType getToken(BYTE *&filePtr) {
+Token getToken(BYTE *&filePtr, int &line_num, int &col_num) {
+
+	// RETURN VALUE OF THIS FUNCTION defined in token.h (Token struct)
+	Token tk;															// token to return
+
+	// cout << *filePtr << setw(20);
 
 	/* ----------------------------------------------- */
 	/* 					ALPHABET 					   */
 	/* if read an alphabet letter then verify if it is */
 	/* a string_lit, keyword, or an identifier  	   */
+	/* 					DIGIT 						   */
+	/* if read a digit verify if it is a real integer  */
+	/* or a integer literal 						   */
 	/* ----------------------------------------------- */
+
+	// if at the end of the line, increment the pointer to next line
+	// or the next index in our array
+	if (*filePtr == '\n') {
+		filePtr++;
+		line_num++;
+		col_num = 0;
+	}
 
 	// get rid of the space between the chars...
 	while (isspace(*filePtr) && *filePtr != '~') {
 		filePtr++;
 	}
-
-	// if at the end of the line, increment the pointer to next line
-	// or the next index in our array
-	if (*filePtr == '\n')
-		filePtr++;
 
 	/* The code inside of the if statement verifies that if we scan and alpha,
 	we will either tokenize it as a string literal if we begin with a ',
@@ -32,81 +44,138 @@ TokenType getToken(BYTE *&filePtr) {
 	or it will be tokenized as a identifier.
 	*/
 	if (isalpha(*filePtr)) {											// scanned an alpha
+		string build_string;											// allocating a string for input
 		if (*(filePtr - 1) == '\'') {									// must be a string
 			while ((*filePtr != '\'') && (*filePtr != '~')) {			// until the 2nd ' is found
+				build_string += *filePtr;
 				filePtr++;												// increment the pointer
+				col_num++;
 			}
 			if (*filePtr == '~') {										// didn't find the closing quote
 				cout << "Error: Missing closing single quote.";
-				return TK_ERROR;										// throw an error
+
+				tk.token_Name = build_string;
+				tk.token_Type = TK_ERROR;
+				tk.line_num = line_num;
+				tk.col_num = col_num;
+
+				return tk;												// throw an error
 			}
-			return TK_STR_LIT;											// otherwise it must be a string literal
+
+			tk.token_Name = build_string;
+			tk.token_Type = TK_STR_LIT;
+			tk.line_num = line_num;
+			tk.col_num = col_num;
+
+			return tk;													// otherwise it must be a string literal
 		} 
 		else {															// starting string literal check
-			string build_string;										// allocating a string for input
 			while (isalpha(*filePtr) || isdigit(*filePtr) ) {			// must be an identifier or keyword
 				if (isalpha(*filePtr)) {								// if alpha
 					build_string += toupper(*filePtr);					// append the letter to string
+					col_num++;
 				} else {												// otherwise
 					build_string += *filePtr;							// append to the string being constructed
+					col_num++;
 				}
 				filePtr++;
 			}
 
-			// cout << build_string;
-
 			string KEYWORDS [] = {										// list of keywords in pascal
-				"PROGRAM", "BEGIN", "END", "PROCEDURE", "IF", "THEN", "ELSE",
+				"PROGRAM", "BEGIN", "END.", "PROCEDURE", "IF", "THEN", "ELSE",
 				"FOR", "WHILE", "DO", "AND", "OR", "NOT", "REPEAT",
 				"BREAK", "FUNCTION", "TYPE", "UNTIL", "LABEL", "VAR"
 			};
+
+			tk.token_Name = build_string;
+			tk.line_num = line_num;
+			tk.col_num = col_num;
 
 			int KW_size = sizeof(KEYWORDS)/sizeof(KEYWORDS[0]);			// get the size of array of strings
 
 			for (int k = 0; k < KW_size; k++) {							// tokenize the build_string
 				if (KEYWORDS[k] == build_string) {
-					if (build_string == "PROGRAM")
-						return TK_PROGRAM;
-					else if (build_string == "BEGIN")
-						return TK_BEGIN;
-					else if (build_string == "END")
-						return TK_END;
-					else if (build_string == "PROCEDURE")
-						return TK_PROCEDURE;
-					else if (build_string == "IF")
-						return TK_IF;
-					else if (build_string == "THEN")
-						return TK_THEN;
-					else if (build_string == "ELSE")
-						return TK_ELSE;
-					else if (build_string == "FOR")
-						return TK_FOR;
-					else if (build_string == "WHILE")
-						return TK_WHILE;
-					else if (build_string == "DO")
-						return TK_DO;
-					else if (build_string == "AND")
-						return TK_AND;
-					else if (build_string == "OR")
-						return TK_OR;
-					else if (build_string == "NOT")
-						return TK_NOT;
-					else if (build_string == "REPEAT")
-						return TK_REPEAT;
-					else if (build_string == "BREAK")
-						return TK_BREAK;
-					else if (build_string == "FUNCTION")
-						return TK_FUNCTION;
-					else if (build_string == "TYPE")
-						return TK_TYPE;
-					else if (build_string == "UNTIL")
-						return TK_UNTIL;
-					else if (build_string == "LABEL")
-						return TK_LABEL;
+					if (build_string == "PROGRAM") {
+						tk.token_Type = TK_PROGRAM;
+						return tk;
+					}
+					else if (build_string == "BEGIN") {
+						tk.token_Type = TK_BEGIN;
+						return tk;
+					}
+					else if (build_string == "END") {
+						tk.token_Type = TK_END;
+						return tk;
+					}
+					else if (build_string == "PROCEDURE") {
+						tk.token_Type = TK_PROCEDURE;
+						return tk;
+					}
+					else if (build_string == "IF") {
+						tk.token_Type = TK_IF;
+						return tk;
+					}
+					else if (build_string == "THEN") {
+						tk.token_Type = TK_THEN;
+						return tk;
+					}
+					else if (build_string == "ELSE") {
+						tk.token_Type = TK_ELSE;
+						return tk;
+					}
+					else if (build_string == "FOR") {
+						tk.token_Type = TK_FOR;
+						return tk;
+					}
+					else if (build_string == "WHILE") {
+						tk.token_Type = TK_WHILE;
+						return tk;
+					}
+					else if (build_string == "DO") {
+						tk.token_Type = TK_DO;
+						return tk;
+					}
+					else if (build_string == "AND") {
+						tk.token_Type = TK_AND;
+						return tk;
+					}
+					else if (build_string == "OR") {
+						tk.token_Type = TK_OR;
+						return tk;
+					}
+					else if (build_string == "NOT") {
+						tk.token_Type = TK_NOT;
+						return tk;
+					}
+					else if (build_string == "REPEAT") {
+						tk.token_Type = TK_REPEAT;
+						return tk;
+					}
+					else if (build_string == "BREAK") {
+						tk.token_Type = TK_BREAK;
+						return tk;
+					}
+					else if (build_string == "FUNCTION") {
+						tk.token_Type = TK_FUNCTION;
+						return tk;
+					}
+					else if (build_string == "TYPE") {
+						tk.token_Type = TK_TYPE;
+						return tk;
+					}
+					else if (build_string == "UNTIL") {
+						tk.token_Type = TK_UNTIL;
+						return tk;
+					}
+					else if (build_string == "LABEL") {
+						tk.token_Type = TK_LABEL;
+						return tk;
+					}
 				}
 			}
-			return TK_ID;
-		}	
+			tk.token_Type = TK_ID;
+			return tk;
+		}
 	}
 
 	/* The code inside of the else if verifies that if it is a digit
@@ -117,65 +186,149 @@ TokenType getToken(BYTE *&filePtr) {
 		while (isdigit(*filePtr) && *filePtr != '~') {					// until we read a int
 			build_num += *filePtr;										// add it on to the string
 			filePtr++;
+			col_num++;
 		}
 
 		if (*filePtr != '.') {
-			return TK_INTEGER_LIT;
+			tk.token_Name = build_num;
+			tk.line_num = line_num;
+			tk.col_num = col_num;
+			tk.token_Type = TK_INTEGER_LIT;
+			return tk;
 		}
+
 	} else {															// must be an operator
+		string op;
+
 		switch(*filePtr)
 		{
 			case ';':	{												// if semicolon return token for semicolon
+				col_num += 1;
+				tk.token_Name = ';';
+				tk.line_num = line_num;
+				tk.col_num = col_num;
+				tk.token_Type = TK_SEMICOLON;
 				filePtr++;
-				return TK_SEMICOLON;
+				return tk;
+			}
+			case ':':	{												// if semicolon return token for semicolon
+				op += *filePtr;
+				filePtr++;
+				if (*filePtr == '=') {
+					op += *filePtr;
+					col_num += 1;
+					tk.token_Name = op;
+					tk.line_num = line_num;
+					tk.col_num = col_num;
+					tk.token_Type = TK_ASSIGNMENT;
+					filePtr++;
+					return tk;
+				}
 			}
 			case '+':	{
+				col_num += 1;
+				tk.token_Name = '+';
+				tk.line_num = line_num;
+				tk.col_num = col_num;
+				tk.token_Type = TK_PLUS;
 				filePtr++;
-				return TK_PLUS;
+				return tk;
 			}
 			case '-':	{
+				col_num += 1;
+				tk.token_Name = '-';
+				tk.line_num = line_num;
+				tk.col_num = col_num;
+				tk.token_Type = TK_MINUS;
 				filePtr++;
-				return TK_MINUS;
+				return tk;
 			}
 			case '/':	{
+				col_num += 1;
+				tk.token_Name = '/';
+				tk.line_num = line_num;
+				tk.col_num = col_num;
+				tk.token_Type = TK_DIV;
 				filePtr++;
-				return TK_DIV;
+				return tk;
 			}
 			case '*':	{
+				col_num += 1;
+				tk.token_Name = '*';
+				tk.line_num = line_num;
+				tk.col_num = col_num;
+				tk.token_Type = TK_MULTI;
 				filePtr++;
-				return TK_MULTI;
+				return tk;
 			}
 			case '%':	{
+				col_num += 1;
+				tk.token_Name = '%';
+				tk.line_num = line_num;
+				tk.col_num = col_num;
+				tk.token_Type = TK_MOD;
 				filePtr++;
-				return TK_MOD;
+				return tk;
 			}
 			case '(':	{
+				col_num += 1;
+				tk.token_Name = '(';
+				tk.line_num = line_num;
+				tk.col_num = col_num;
+				tk.token_Type = TK_OPEN_PAREN;
 				filePtr++;
-				return TK_OPEN_PAREN;
+				return tk;
 			}
 			case ')':	{
+				col_num += 1;
+				tk.token_Name = ')';
+				tk.line_num = line_num;
+				tk.col_num = col_num;
+				tk.token_Type = TK_CLOSE_PAREN;
 				filePtr++;
-				return TK_CLOSE_PAREN;
+				return tk;
 			}
 			case '\'':	{
+				col_num += 1;
+				tk.token_Name = '\'';
+				tk.line_num = line_num;
+				tk.col_num = col_num;
+				tk.token_Type = TK_SINGLE_QUOTE;
 				filePtr++;
-				return TK_SINGLE_QUOTE;
+				return tk;
 			}
 			case '"':	{
+				col_num += 1;
+				tk.token_Name = '"';
+				tk.line_num = line_num;
+				tk.col_num = col_num;
+				tk.token_Type = TK_DOUBLE_QUOTE;
 				filePtr++;
-				return TK_DOUBLE_QUOTE;
+				return tk;
 			}
 			case '~':	{
-				return TK_EOF;
+				col_num += 1;
+				tk.token_Name = '~';
+				tk.line_num = line_num;
+				tk.col_num = col_num;
+				tk.token_Type = TK_EOF;
+				filePtr++;
+				return tk;
 			}
 			default: {
+				col_num += 1;
+				tk.token_Name = *filePtr;
+				tk.line_num = line_num;
+				tk.col_num = col_num;
+				tk.token_Type = TK_ERROR;
 				filePtr++;
-				return TK_ERROR;
+				return tk;
 			}
 		}
 	}
 
-	return UNDEF;
+	tk.token_Type = UNDEF;
+	return tk;
 
 	// else if () {
 

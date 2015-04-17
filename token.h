@@ -6,6 +6,11 @@
 #ifndef TOKEN_H 
 #define TOKEN_H 
 
+#include <iostream>
+#include <locale>
+#include <string>
+#include <iomanip>
+
 /* ------------------------------------------------ */
 /*               TOKEN TYPES		             	*/
 /* ------------------------------------------------	*/
@@ -74,9 +79,10 @@ typedef enum {
 
 typedef struct {
 	TokenType token_Type;
-	char *token_Name;
+	std::string token_Name;
+	int line_num;
+	int col_num;
 } Token;
-
 
 #endif
 
