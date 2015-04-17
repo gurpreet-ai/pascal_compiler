@@ -1,10 +1,9 @@
-// http://www.codeproject.com/Articles/833206/Lexical-analyzer-an-example
-
 #include <iostream>
 #include <string>
 #include <iomanip>
 #include "token.h"
 #include "scanner.h"
+#include "parser.cpp"
 #include "sym_table.h"
 #include "node.h"
 #include "util.cpp"
@@ -45,6 +44,7 @@ int main (int argc, char* argv[]) {
 	fileBuf[fileSize + 1] = '~';									// ~ to the end the file
 
 	fread(fileBuf, fileSize, 1, file);								// read the file in to the buffer
+	rewind(file);
 
 	// Now that we have the entire file buffered, we can take a look at some binary infomation
 	// Lets take a look in hexadecimal
@@ -58,8 +58,6 @@ int main (int argc, char* argv[]) {
 	/* ------------------------------------------------------------------------------------------------ */
 	
 	Token tk;
-	rewind(file);
-
 	int line_num = 1, col_num = 0;
 	
 	std::list<Token> token_list;
@@ -72,6 +70,14 @@ int main (int argc, char* argv[]) {
 	print_scanner_output(token_list);									// util.cpp - print the scanner output
 
 	fclose(file);
+
+	/* ------------------------------------------------------------------------------------------------ */
+	/* ---------------------------------				----------------------------------------------- */
+	/* 										PARSER  						      						*/
+	/* ---------------------------------				----------------------------------------------	*/
+	/* ------------------------------------------------------------------------------------------------ */
+
+	parser(token_list);
 
 	cout << endl;
 	return 0;

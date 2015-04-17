@@ -8,14 +8,17 @@
 
 using namespace std;
 
+enum x { A, B, C };
+
 int main () {
+	
 	// SymbolTable one;
 	// int a = one.get_address();
 	// cout << a;
 	// cout << static_cast<Test>(1) <<endl;
-	node a;
-	a.m_data_field(10);
-	cout << a.m_data_field;
+	// node a;
+	// a.m_data_field(10);
+	// cout << a.m_data_field;
 
 	return 0;
 }
