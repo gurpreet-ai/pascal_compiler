@@ -10,6 +10,14 @@ bool match(int t, int cur_token) {
 	return (t == cur_token);
 }
 
+// symbol table will be a list of structs
+// struct sym_table {
+// 	int Address;
+// 	string Type;
+// 	string Name;
+// 	string Value;
+// };
+
 void parser (std::list<Token> token_list) {	
 /*	<program> ->
 		<program header>
@@ -59,61 +67,70 @@ void parser (std::list<Token> token_list) {
 	/* ---------------------------------				----------------------------------------------	*/
 	/* ------------------------------------------------------------------------------------------------ */
 
-	Token var_decl = token_list.front();										// get the token
-	token_list.pop_front();														// pop is from the list
-	cur_token = var_decl.token_Type;											// cur_token here is TK_VAR
-	flag = match(cur_token, TK_VAR);											// match the first token with PROGRAM 
+	std::list<sym_table> symbol_Table;												// will con
+	Token var_decl;
+	Token var_name;
+	Token semi_colon;
+	Token comma_or_colon;
+	Token type;
 
-	if (flag) {																	// variable declaration
-		Token var_name = token_list.front();									// next token should be the name of the variable/identifier
-		token_list.pop_front();													// pop that from the list
-		cur_token = var_name.token_Type;								
-		flag = match(cur_token, TK_ID);											// match token with TK_Identifier
+	while (true) {
+		var_decl = token_list.front();												// get the token
+		token_list.pop_front();														// pop is from the list
+		cur_token = var_decl.token_Type;											// cur_token here is TK_VAR
+		flag = match(cur_token, TK_VAR);											// match the first token with PROGRAM 
+		
+		std::list<sym_table> lst_of_identifiers;
 
-		if (flag) {
-			cout << var_name.token_Name << " | TK_ID" << endl;
+		if (flag) {																	// variable declaration
+			while (1) {
+				var_name = token_list.front();										// next token should be the name of the variable/identifier
+				token_list.pop_front();												// pop that from the list
+				cur_token = var_name.token_Type;							
+				flag = match(cur_token, TK_ID);										// match token with TK_Identifier
 
-			Token comma_or_colon = token_list.front();							// next token should be comma or colon
-			token_list.pop_front();												// pop that from the list
-			cur_token = comma_or_colon.token_Type;									
-			flag = match(cur_token, TK_COMMA);
-			if (flag) {															// it was a comma
-				
-			} else {
-				flag = match(cur_token, TK_COLON);
 				if (flag) {
-					cout << comma_or_colon.token_Name << " | TK_COLON" << endl;
+					cout << var_name.token_Name << " | TK_ID" << endl;
 
-					Token type = token_list.front();							// get the token
-					token_list.pop_front();										// pop is from the list
-					cur_token = type.token_Type;								// cur_token here is TK_VAR
-					flag = match(cur_token, TK_INT);							// match the first token with PROGRAM 
-
-					if (flag) {
-						cout << type.token_Name << " | TK_INT" << endl;
-
-						Token semi_colon_1 = token_list.front();							// next token should be the name of the program
-						token_list.pop_front();												// pop that from the list
-				
-						cur_token = semi_colon_1.token_Type;								
-						flag = match(cur_token, TK_SEMICOLON);								// match it token	
-						if (flag) {
-							cout << semi_colon_1.token_Name << " | TK_SEMICOLON" << endl;
-
-							cout << "Program declaration looks good" << endl;					// 
-						} else {
-							cout << "error 7" << endl;										// error 3 display
-						}
-
-					}
-
-				} else {
-					cout << "error 5"<<endl;
+					comma_or_colon = token_list.front();							// next token should be comma or colon
+					token_list.pop_front();											// pop that from the list
+					cur_token = comma_or_colon.token_Type;							
+					flag = match(cur_token, TK_COMMA);
+					if (!flag)
+						break;
 				}
 			}
 
-		} else {
-			cout << "error 4";
+			flag = match(cur_token, TK_COLON);
+
+			if (flag) {
+				type = token_list.front();											// get the token
+				token_list.pop_front();												// pop is from the list
+				cur_token = type.token_Type;										// cur_token here is TK_VAR
+				flag = match(cur_token, TK_INT);									// match the first token with PROGRAM 
+				if (flag) {
+
+					semi_colon = token_list.front();								// next token should be the name of the program
+					token_list.pop_front();											// pop that from the list
+					cur_token = semi_colon.token_Type;								
+					flag = match(cur_token, TK_SEMICOLON);
+					if (flag) {
+						var_decl = token_list.front();								// get the token
+						cur_token = var_decl.token_Type;							// cur_token here is TK_VAR
+						flag = match(cur_token, TK_VAR);							// match the first token with PROGRAM 
+
+						if (!flag)
+							break;
+
+					} else {
+						cout << "error 2";
+					}
+				}
+
+			} else {
+				cout << "error 1";
+			}
+
 		}
 	}
 
