@@ -6,6 +6,31 @@
 #ifndef TOKEN_H
 #define TOKEN_H
 
+
+		// // <assignment statement>
+		// identifier = token_list.front();
+		// cur_token = identifier.token_Type;
+
+		// // left-hand side
+		// if (match(cur_token, TK_ID)) {
+		// 	assign_stmt = token_list.front();
+		// 	cur_token = assign_stmt.token_Type;
+
+		// 	if (match(cur_token, TK_ASSIGNMENT)) {
+		// 		// have seen id := 
+
+		// 		// see an int
+		// 		int_ = token_list.front();
+		// 		cur_token = int_.token_Type;
+		// 		if (match)
+
+		// 	}
+
+
+
+
+		// }
+
 #include <iostream>
 #include <locale>
 #include <string>
@@ -31,7 +56,7 @@ typedef enum {
 	TK_TYPE, 	TK_IF, 		TK_THEN, 	TK_ELSE, 
 	TK_UNTIL, 	TK_FUNCTION, 			TK_BREAK, 
 	TK_LABEL, 	TK_END_CODE, TK_VAR,	TK_INT,
-	TK_REAL,
+	TK_REAL,	TK_WRITELN,
 
 	/* ----------------------------------------------- */
 	/*               OPERATORS		                   */

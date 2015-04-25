@@ -1,6 +1,6 @@
 program sumab;
 var a, b, sum : Integer;
-var a, b, sum : Integer;
+var c, d, sumcd : Integer;
 begin
 	a := 2;
 	b := 2;

@@ -4,8 +4,6 @@
 #include "token.h"
 #include "scanner.h"
 #include "parser.cpp"
-#include "sym_table.h"
-#include "node.h"
 #include "util.cpp"
 #include <list>
 
