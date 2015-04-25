@@ -195,34 +195,57 @@ void parser (std::list<Token> token_list) {
 		token_list.pop_front();
 		cur_token = new_tk.token_Type;
 		flag = match(cur_token, TK_ID);																		// matched an identifier
+		string left_hand_side = new_tk.token_Name;
 		if (flag) {
 			new_tk = token_list.front();
 			token_list.pop_front();
 			cur_token = new_tk.token_Type;
 			flag = match(cur_token, TK_ASSIGNMENT);															// match an assignment statement
 			if (flag) {
-				new_tk = token_list.front();
-				token_list.pop_front();
-				cur_token = new_tk.token_Type;
-				flag = match(cur_token, TK_INTEGER_LIT);													// integer literal
-				if (flag) {
-					decoraded_nodes I;
-					I.instruction_ptr = instruction_pointer;
-					I.instruction = "op_push";
-					I.value = new_tk.token_Name;
-					I.token = cur_token;
-					instruction_list.insert(ittt, I);
-					instruction_pointer += 1;
+				while (cur_token != TK_SEMICOLON) {															// until we find the semicolon
+					new_tk = token_list.front();
+					token_list.pop_front();
+					cur_token = new_tk.token_Type;
+					flag = match(cur_token, TK_INTEGER_LIT);													// integer literal
+					if (flag) {
+						decoraded_nodes I;
+						I.instruction_ptr = instruction_pointer;
+						I.instruction = "op_push";
+						I.value = new_tk.token_Name;
+						I.token = cur_token;
+						instruction_list.insert(ittt, I);
+						instruction_pointer += 1;
+					}
 
+					flag = match(cur_token, TK_PLUS);
+					if (flag) {
+						decoraded_nodes A;
+						A.instruction_ptr = instruction_pointer;
+						A.instruction = "op_add";
+						A.value = new_tk.token_Name;
+						A.token = cur_token;
+						instruction_list.insert(ittt, A);
+						instruction_pointer += 1;
+					}
 				}
-
+				flag = match(cur_token, TK_SEMICOLON);
+				if (flag) {
+					decoraded_nodes B;
+					B.instruction_ptr = instruction_pointer;
+					B.instruction = "op_pop";
+					B.value = left_hand_side;
+					instruction_list.insert(ittt, B);
+					instruction_pointer += 1;
+				}
 			}
 		}
-
-		// break;
 	}
 
 	print_parser_output(instruction_list);
+
+}
+
+void Expression() {
 
 }
 
