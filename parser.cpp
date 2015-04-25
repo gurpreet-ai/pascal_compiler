@@ -31,8 +31,7 @@ void print_symbol_table(std::list<sym_table> sym_table);
 void print_parser_output(std::list<decoraded_nodes> instruction_list);
 // void statements(std::list<Token> token_list);
 
-
-void parser (std::list<Token> token_list) {	
+void parser (std::list<Token> token_list, std::list<decoraded_nodes>& instruction_list) {	
 /*	<program> ->
 		<program header>
 		<declarations>
@@ -184,7 +183,7 @@ void parser (std::list<Token> token_list) {
 	if (!flag)
 		cout << "error at begin";
 
-	std::list<decoraded_nodes> instruction_list;
+	// std::list<decoraded_nodes> instruction_list;
 	std::list<decoraded_nodes>::iterator ittt;
 	ittt = instruction_list.begin();
 
@@ -241,13 +240,8 @@ void parser (std::list<Token> token_list) {
 		}
 	}
 
-	print_parser_output(instruction_list);
-
 }
 
-void Expression() {
-
-}
 
 void print_parser_output(std::list<decoraded_nodes> instruction_list) {
 	const char separator    = ' ';

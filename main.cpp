@@ -75,7 +75,10 @@ int main (int argc, char* argv[]) {
 	/* ---------------------------------				----------------------------------------------	*/
 	/* ------------------------------------------------------------------------------------------------ */
 
-	parser(token_list);
+	std::list<decoraded_nodes> instruction_list;
+
+	parser(token_list, instruction_list);
+	print_parser_output(instruction_list);
 
 	cout << endl;
 	return 0;
