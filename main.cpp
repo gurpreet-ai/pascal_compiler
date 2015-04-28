@@ -6,6 +6,7 @@
 #include "parser.cpp"
 #include "util.cpp"
 #include <list>
+#include "stack_machine.cpp"
 
 using namespace std;
 
@@ -76,11 +77,20 @@ int main (int argc, char* argv[]) {
 	/* ------------------------------------------------------------------------------------------------ */
 
 	std::list<decoraded_nodes> instruction_list;
+	std::list<sym_table> symbol_Table;
 
-	parser(token_list, instruction_list);
+	parser(token_list, instruction_list, symbol_Table);
 	print_parser_output(instruction_list);
 
 	cout << endl;
+
+	/* ------------------------------------------------------------------------------------------------ */
+	/* ---------------------------------				----------------------------------------------- */
+	/* 									STACK MACHINE  						      						*/
+	/* ---------------------------------				----------------------------------------------	*/
+	/* ------------------------------------------------------------------------------------------------ */
+	stackMachine(instruction_list, symbol_Table);
+
 	return 0;
 }
 
