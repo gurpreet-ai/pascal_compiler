@@ -25,11 +25,8 @@ typedef struct {
 	std::string value;
 } decoraded_nodes;
 
-// 'ip': 0, 'token': 'TK_INTEGER', 'instruction': 'op_push', 'value': '8'
-
 void print_symbol_table(std::list<sym_table> sym_table);
 void print_parser_output(std::list<decoraded_nodes> instruction_list);
-// void statements(std::list<Token> token_list);
 
 void E(int & cur_token, Token & new_tk, std::list<Token>& token_list, std::list<decoraded_nodes>& instruction_list, std::list<decoraded_nodes>::iterator & ittt, int & instruction_pointer);
 void T(int & cur_token, Token & new_tk, std::list<Token>& token_list, std::list<decoraded_nodes>& instruction_list, std::list<decoraded_nodes>::iterator & ittt, int & instruction_pointer);
@@ -208,48 +205,12 @@ void parser (std::list<Token> token_list, std::list<decoraded_nodes>& instructio
 			flag = match(cur_token, TK_ASSIGNMENT);															// match an assignment statement
 			if (flag) {
 
-				// while (cur_token != TK_SEMICOLON) {															// until we find the semicolon
-				// 	new_tk = token_list.front();
-				// 	token_list.pop_front();
-				// 	cur_token = new_tk.token_Type;
-				// 	flag = match(cur_token, TK_INTEGER_LIT);												// integer literal
-				// 	if (flag) {
-				// 		decoraded_nodes I;
-				// 		I.instruction_ptr = instruction_pointer;
-				// 		I.instruction = "op_push";
-				// 		I.value = new_tk.token_Name;
-				// 		I.token = cur_token;
-				// 		instruction_list.insert(ittt, I);
-				// 		instruction_pointer += 1;
-				// 	}
-
-				// 	flag = match(cur_token, TK_PLUS);
-				// 	if (flag) {
-				// 		decoraded_nodes A;
-				// 		A.instruction_ptr = instruction_pointer;
-				// 		A.instruction = "op_add";
-				// 		A.value = new_tk.token_Name;
-				// 		A.token = cur_token;
-				// 		instruction_list.insert(ittt, A);
-				// 		instruction_pointer += 1;
-				// 	}
-				// }
-
-
-				// recursive decent parser
 				new_tk = token_list.front();
 				token_list.pop_front();
 				cur_token = new_tk.token_Type;
 
-				cout << "Begin with Integer: " << new_tk.token_Type << endl;
-
+				// recursive decent parser
 				E(cur_token, new_tk, token_list, instruction_list, ittt, instruction_pointer);
-
-				// new_tk = token_list.front();
-				// token_list.pop_front();
-				// cur_token = new_tk.token_Type;				
-				
-				cout << "End with semicolon: " << new_tk.token_Type << endl;
 
 				flag = match(cur_token, TK_SEMICOLON);
 				if (flag) {
@@ -264,6 +225,14 @@ void parser (std::list<Token> token_list, std::list<decoraded_nodes>& instructio
 		}
 	}
 
+	decoraded_nodes B;
+	B.instruction_ptr = instruction_pointer;
+	B.instruction = "op_halt";
+	B.value = "END.";
+	B.token = TK_END;
+	instruction_list.insert(ittt, B);
+	instruction_pointer += 1;
+	
 }
 
 void E(int & cur_token, Token & new_tk, std::list<Token>& token_list, std::list<decoraded_nodes>& instruction_list, std::list<decoraded_nodes>::iterator & ittt, int & instruction_pointer) {
@@ -278,13 +247,10 @@ void T(int & cur_token, Token & new_tk, std::list<Token>& token_list, std::list<
 
 void E_prime(int & cur_token, Token & new_tk, std::list<Token>& token_list, std::list<decoraded_nodes>& instruction_list, std::list<decoraded_nodes>::iterator & ittt, int & instruction_pointer) {
 
-	cout << "cur token in E': " << cur_token <<endl;
-
 	int save = cur_token;
 	Token save_token = new_tk;
-	
-	if (match(cur_token, TK_PLUS) ) {
 
+	if (match(cur_token, TK_PLUS) ) {
 		new_tk = token_list.front();
 		token_list.pop_front();
 		cur_token = new_tk.token_Type;
@@ -312,15 +278,29 @@ void E_prime(int & cur_token, Token & new_tk, std::list<Token>& token_list, std:
 
 	} else if (match(cur_token, TK_MINUS)) {
 
-		decoraded_nodes B;
-		B.instruction_ptr = instruction_pointer;
-		B.instruction = "op_sub";
-		B.value = new_tk.token_Name;
-		B.token = cur_token;
-		instruction_list.insert(ittt, B);
-		instruction_pointer += 1;
+		new_tk = token_list.front();
+		token_list.pop_front();
+		cur_token = new_tk.token_Type;
 
-		T(cur_token, new_tk, token_list, instruction_list, ittt, instruction_pointer);
+		if (match(cur_token, TK_SEMICOLON)) {
+			T(cur_token, new_tk, token_list, instruction_list, ittt, instruction_pointer);
+			decoraded_nodes A;
+			A.instruction_ptr = instruction_pointer;
+			A.instruction = "op_sub";
+			A.value = new_tk.token_Name;
+			A.token = cur_token;
+			instruction_list.insert(ittt, A);
+			instruction_pointer += 1;
+		} else {
+			T(cur_token, new_tk, token_list, instruction_list, ittt, instruction_pointer);
+			decoraded_nodes A;
+			A.instruction_ptr = instruction_pointer;
+			A.instruction = "op_sub";
+			A.value = save_token.token_Name;
+			A.token = save;
+			instruction_list.insert(ittt, A);
+			instruction_pointer += 1;
+		}
 		E_prime(cur_token, new_tk, token_list, instruction_list, ittt, instruction_pointer);
 
 	} else {
@@ -368,7 +348,40 @@ void F(int & cur_token, Token & new_tk, std::list<Token>& token_list, std::list<
 }
 
 void T_prime(int & cur_token, Token & new_tk, std::list<Token>& token_list, std::list<decoraded_nodes>& instruction_list, std::list<decoraded_nodes>::iterator & ittt, int & instruction_pointer) {
+	
+	int save = cur_token;
+	Token save_token = new_tk;
+
+	if (match(cur_token, TK_MULTI) ) {
+		new_tk = token_list.front();
+		token_list.pop_front();
+		cur_token = new_tk.token_Type;
+
+		if (match(cur_token, TK_SEMICOLON)) {
+			F(cur_token, new_tk, token_list, instruction_list, ittt, instruction_pointer);
+			decoraded_nodes A;
+			A.instruction_ptr = instruction_pointer;
+			A.instruction = "op_multi";
+			A.value = new_tk.token_Name;
+			A.token = cur_token;
+			instruction_list.insert(ittt, A);
+			instruction_pointer += 1;
+		} else {
+			F(cur_token, new_tk, token_list, instruction_list, ittt, instruction_pointer);
+			decoraded_nodes A;
+			A.instruction_ptr = instruction_pointer;
+			A.instruction = "op_multi";
+			A.value = save_token.token_Name;
+			A.token = save;
+			instruction_list.insert(ittt, A);
+			instruction_pointer += 1;
+		}
+		T_prime(cur_token, new_tk, token_list, instruction_list, ittt, instruction_pointer);
+
+	}
+
 	return;
+
 }
 
 void print_parser_output(std::list<decoraded_nodes> instruction_list) {
