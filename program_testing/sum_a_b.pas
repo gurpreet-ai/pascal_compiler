@@ -5,6 +5,5 @@ begin
 	a := 2;
 	b := 2;
 	sum := 3;
-	sum := 2 + 1 + 2 + 2;
-	writeln(sum);
+	sum := 6 * 2 + 2;
 end.

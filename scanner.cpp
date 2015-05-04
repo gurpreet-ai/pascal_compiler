@@ -322,6 +322,24 @@ Token getToken(BYTE *&filePtr, int &line_num, int &col_num) {
 				filePtr++;
 				return tk;
 			}
+			case '<':	{
+				col_num += 1;
+				tk.token_Name = '<';
+				tk.line_num = line_num;
+				tk.col_num = col_num;
+				tk.token_Type = TK_LESS;
+				filePtr++;
+				return tk;
+			}
+			case '>':	{
+				col_num += 1;
+				tk.token_Name = '>';
+				tk.line_num = line_num;
+				tk.col_num = col_num;
+				tk.token_Type = TK_GREATER;
+				filePtr++;
+				return tk;
+			}
 			case '\'':	{
 				col_num += 1;
 				tk.token_Name = '\'';
@@ -355,6 +373,15 @@ Token getToken(BYTE *&filePtr, int &line_num, int &col_num) {
 				tk.line_num = line_num;
 				tk.col_num = col_num;
 				tk.token_Type = TK_COMMA;
+				filePtr++;
+				return tk;
+			}
+			case '=':	{
+				col_num += 1;
+				tk.token_Name = '=';
+				tk.line_num = line_num;
+				tk.col_num = col_num;
+				tk.token_Type = TK_EQUALS;
 				filePtr++;
 				return tk;
 			}
