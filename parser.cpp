@@ -292,7 +292,6 @@ void repeat(int & cur_token, Token & new_tk, std::list<Token>& token_list, std::
 }
 
 void logic(int & cur_token, Token & new_tk, std::list<Token>& token_list, std::list<decoraded_nodes>& instruction_list, std::list<decoraded_nodes>::iterator & ittt, int & instruction_pointer) {
-	cout << "cur token in login: " << cur_token << endl;
 	
 	int save = cur_token;
 	Token save_token = new_tk;
@@ -404,10 +403,12 @@ void E_prime(int & cur_token, Token & new_tk, std::list<Token>& token_list, std:
 void F(int & cur_token, Token & new_tk, std::list<Token>& token_list, std::list<decoraded_nodes>& instruction_list, std::list<decoraded_nodes>::iterator & ittt, int & instruction_pointer) {
 
 	if (match(cur_token, TK_ID)) {
+
 		decoraded_nodes I;
 		I.instruction_ptr = instruction_pointer;
 		I.instruction = "op_push";
 		I.value = new_tk.token_Name;
+
 		I.token = cur_token;
 		instruction_list.insert(ittt, I);
 		instruction_pointer += 1;
