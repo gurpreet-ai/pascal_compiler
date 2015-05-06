@@ -5,5 +5,5 @@ begin
 	a := 2;
 	b := 2;
 	sum := 3;
-	sum := 6 * 2 + 2;
+	sum := a * 2 + b;
 end.

@@ -23,8 +23,10 @@ int main (int argc, char* argv[]) {
 	// cout << argc <<endl;											// number of arguments
 	// cout << argv[1] <<endl;										// the source file-name
 
-	// const char *filePath = "program_testing/sum_a_b.pas";
-	const char *filePath = "program_testing/repeat.pas";
+	const char *filePath = "program_testing/helo_world.pas";
+	// filePath = "program_testing/repeat.pas";
+	filePath = "program_testing/if_else.pas";
+	// filePath = "program_testing/sum_a_b.pas";
 
 	BYTE *fileBuf;													// pointer to our buffered data
 	FILE *file = NULL;												// file pointer

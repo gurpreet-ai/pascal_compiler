@@ -10,8 +10,6 @@
 void stackMachine(std::list<decoraded_nodes> instruction_list, std::list<sym_table> lst_of_identifiers) {
 	int instruction_pointer = 0;
 
-	// decoraded_nodes cur_instruc;
-
 	std::stack<string> instruc_stack;
 	std::list<sym_table>::iterator itt;
 				
@@ -19,7 +17,7 @@ void stackMachine(std::list<decoraded_nodes> instruction_list, std::list<sym_tab
 	int l_i_size = lst_of_identifiers.size();
 
 	for (std::list<decoraded_nodes>::iterator cur_instruc = instruction_list.begin(), end = instruction_list.end(); cur_instruc != end; ++cur_instruc) {
-		cout << "Current instruction: " << cur_instruc->instruction_ptr <<endl;
+		// cout << "Current instruction: " << cur_instruc->instruction_ptr <<endl;
 		if (cur_instruc->instruction == "op_push") {
 			if (cur_instruc->token == TK_ID) {
 			
@@ -100,25 +98,70 @@ void stackMachine(std::list<decoraded_nodes> instruction_list, std::list<sym_tab
 			int op2 = std::stoi(instruc_stack.top());
 			instruc_stack.pop();
 
-			cout << "op1: " << op1 << "op2: " << op2 <<endl;
-
 			int op_g = (op2 > op1);
 
 			instruc_stack.push(std::to_string(op_g));
 
+		} else if (cur_instruc->instruction == "op_less") {
+
+			int op1 = std::stoi(instruc_stack.top());
+			instruc_stack.pop();
+
+			int op2 = std::stoi(instruc_stack.top());
+			instruc_stack.pop();
+
+			int op_g = (op2 < op1);
+
+			instruc_stack.push(std::to_string(op_g));
+
 		} else if (cur_instruc->instruction == "op_jfalse") {
+
 			int flag = std::stoi(instruc_stack.top());
-			cout << "FLAG is " << flag << endl; 
-			instruc_stack.pop();			
-			if (!flag) {
-				int go_to = std::stoi(cur_instruc->value);
-				int at = cur_instruc->instruction_ptr;
-				int diff = at - go_to + 1;
+
+			cout << "FLAG : " << flag <<endl;
+			instruc_stack.pop();
+			
+			if (!flag) {									 // if 0
+				int go_to = std::stoi(cur_instruc->value);   // 9
+				int at = cur_instruc->instruction_ptr;       // 5
+				int diff = at - go_to + 1;                   // 5
+				if (diff > 0) {
+					while (diff > 0) {
+						diff--;
+						cur_instruc--;
+					}
+				} else if (diff < 0) {
+					while (diff <= 0) {
+						diff++;
+						cur_instruc++;
+					}
+				}
+			}
+
+		} else if (cur_instruc->instruction == "op_jmp") {
+
+			int go_to = std::stoi(cur_instruc->value);   // 13
+			int at = cur_instruc->instruction_ptr;       // 9
+			int diff = at - go_to + 1;                   // 5
+
+			if (diff > 0) {
 				while (diff > 0) {
 					diff--;
 					cur_instruc--;
 				}
+			} else if (diff < 0) {
+				while (diff < 0) {
+					diff++;
+					cur_instruc++;
+				}
 			}
+
+		} else if (cur_instruc->instruction == "op_writeln") {
+			cout << "********************************************\n";
+			cout << "writeln OUTPUT -- > " << instruc_stack.top() << endl;
+			cout << "********************************************\n";
+			instruc_stack.pop();
+
 		}
 	}
 

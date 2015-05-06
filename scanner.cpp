@@ -84,7 +84,7 @@ Token getToken(BYTE *&filePtr, int &line_num, int &col_num) {
 			string KEYWORDS [] = {										// list of keywords in pascal
 				"PROGRAM", "BEGIN", "END.", "PROCEDURE", "IF", "THEN", "ELSE",
 				"FOR", "WHILE", "DO", "AND", "OR", "NOT", "REPEAT",
-				"BREAK", "FUNCTION", "TYPE", "UNTIL", "LABEL", "VAR", "INTEGER", "REAL"
+				"BREAK", "FUNCTION", "TYPE", "UNTIL", "LABEL", "VAR", "INTEGER", "REAL", "WRITELN"
 			};
 
 			if (*filePtr == '.') {
@@ -114,6 +114,10 @@ Token getToken(BYTE *&filePtr, int &line_num, int &col_num) {
 						tk.token_Type = TK_PROGRAM;
 						return tk;
 					} 
+					else if (build_string == "WRITELN") {
+						tk.token_Type = TK_WRITELN;
+						return tk;
+					}
 					else if (build_string == "VAR") {
 						tk.token_Type = TK_VAR;
 						return tk;

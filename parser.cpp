@@ -31,6 +31,8 @@ void print_parser_output(std::list<decoraded_nodes> instruction_list);
 void statements(int & cur_token, Token & new_tk, std::list<Token>& token_list, std::list<decoraded_nodes>& instruction_list, std::list<decoraded_nodes>::iterator & ittt, int & instruction_pointer);
 void logic(int & cur_token, Token & new_tk, std::list<Token>& token_list, std::list<decoraded_nodes>& instruction_list, std::list<decoraded_nodes>::iterator & ittt, int & instruction_pointer);
 void repeat(int & cur_token, Token & new_tk, std::list<Token>& token_list, std::list<decoraded_nodes>& instruction_list, std::list<decoraded_nodes>::iterator & ittt, int & instruction_pointer);
+void writeln(int & cur_token, Token & new_tk, std::list<Token>& token_list, std::list<decoraded_nodes>& instruction_list, std::list<decoraded_nodes>::iterator & ittt, int & instruction_pointer);
+void if_else(int & cur_token, Token & new_tk, std::list<Token>& token_list, std::list<decoraded_nodes>& instruction_list, std::list<decoraded_nodes>::iterator & ittt, int & instruction_pointer);
 
 void E(int & cur_token, Token & new_tk, std::list<Token>& token_list, std::list<decoraded_nodes>& instruction_list, std::list<decoraded_nodes>::iterator & ittt, int & instruction_pointer);
 void T(int & cur_token, Token & new_tk, std::list<Token>& token_list, std::list<decoraded_nodes>& instruction_list, std::list<decoraded_nodes>::iterator & ittt, int & instruction_pointer);
@@ -97,23 +99,23 @@ void parser (std::list<Token> token_list, std::list<decoraded_nodes>& instructio
 	Token type;
 	sym_table id;
 	int addr = 0;
-
+	bool flag1;
 	while (true) {
 		var_decl = token_list.front();												// get the token
 		token_list.pop_front();														// pop is from the list
 		cur_token = var_decl.token_Type;											// cur_token here is TK_VAR
-		flag = match(cur_token, TK_VAR);											// match the first token with PROGRAM 
+		flag1 = match(cur_token, TK_VAR);											// match the first token with PROGRAM 
 		
 		std::list<sym_table> lst_of_identifiers;
 		std::list<sym_table>::iterator itt;
 		itt = lst_of_identifiers.begin();
 
-		if (flag) {																	// variable declaration
+		if (flag1) {																	// variable declaration
 			while (1) {
 				var_name = token_list.front();										// next token should be the name of the variable/identifier
 				token_list.pop_front();												// pop that from the list
 				cur_token = var_name.token_Type;							
-				flag = match(cur_token, TK_ID);										// match token with TK_Identifier
+				bool flag = match(cur_token, TK_ID);										// match token with TK_Identifier
 
 				if (flag) {
 
@@ -170,6 +172,8 @@ void parser (std::list<Token> token_list, std::list<decoraded_nodes>& instructio
 				cout << "error 1";
 			}
 
+		} else {
+			break;
 		}
 	}
 
@@ -184,12 +188,16 @@ void parser (std::list<Token> token_list, std::list<decoraded_nodes>& instructio
         	<statements> 
         <end> */
 	
-	Token begin = token_list.front();
-	token_list.pop_front();
-	cur_token = begin.token_Type;
-	flag = match(cur_token, TK_BEGIN);
-	if (!flag)
-		cout << "error at begin";
+	if (!flag1) {
+		flag = match(cur_token, TK_BEGIN);
+		if (!flag)
+			cout << "error at begin";
+	} else {
+		Token begin = token_list.front();
+		token_list.pop_front();
+		cur_token = begin.token_Type;
+		flag = match(cur_token, TK_BEGIN);
+	}
 
 	// std::list<decoraded_nodes> instruction_list;
 	std::list<decoraded_nodes>::iterator ittt;
@@ -197,13 +205,13 @@ void parser (std::list<Token> token_list, std::list<decoraded_nodes>& instructio
 
 	int instruction_pointer = 0;
 
+	
 	while (cur_token != TK_END) {
 		Token new_tk = token_list.front();
 		token_list.pop_front();
 		cur_token = new_tk.token_Type;
-		
+		// cout << "before statemnts \n";
 		statements(cur_token, new_tk, token_list, instruction_list, ittt, instruction_pointer);
-
 	}
 
 	decoraded_nodes B;
@@ -217,10 +225,11 @@ void parser (std::list<Token> token_list, std::list<decoraded_nodes>& instructio
 }
 
 static bool op = true;
+static bool write = false;
 
 void statements(int & cur_token, Token & new_tk, std::list<Token>& token_list, std::list<decoraded_nodes>& instruction_list, std::list<decoraded_nodes>::iterator & ittt, int & instruction_pointer) {
+	string left_hand_side;
 	while (true) {
-		string left_hand_side;
 
 		if (match(cur_token, TK_ID)) {
 			left_hand_side = new_tk.token_Name;
@@ -233,8 +242,22 @@ void statements(int & cur_token, Token & new_tk, std::list<Token>& token_list, s
 			token_list.pop_front();
 			cur_token = new_tk.token_Type;
 			repeat(cur_token, new_tk, token_list, instruction_list, ittt, instruction_pointer);
-		}
 
+		} else if (match(cur_token, TK_WRITELN)) {
+			write = true;
+			// cout << "IN HERE \n";
+			new_tk = token_list.front();
+			token_list.pop_front();
+			cur_token = new_tk.token_Type;
+			writeln(cur_token, new_tk, token_list, instruction_list, ittt, instruction_pointer);
+
+		} else if (match(cur_token, TK_IF)) {
+			new_tk = token_list.front();
+			token_list.pop_front();
+			cur_token = new_tk.token_Type;
+			if_else(cur_token, new_tk, token_list, instruction_list, ittt, instruction_pointer);
+
+		}
 
 		if (match(cur_token, TK_ASSIGNMENT)) {
 			new_tk = token_list.front();
@@ -245,11 +268,19 @@ void statements(int & cur_token, Token & new_tk, std::list<Token>& token_list, s
 		logic(cur_token, new_tk, token_list, instruction_list, ittt, instruction_pointer);
 		
 		if (match(cur_token, TK_SEMICOLON)) {
-			if (op) {
+			if (op && !write) {
 				decoraded_nodes B;
 				B.instruction_ptr = instruction_pointer;
 				B.instruction = "op_pop";
 				B.value = left_hand_side;
+				instruction_list.insert(ittt, B);
+				instruction_pointer += 1;
+			} else if (write) {
+				decoraded_nodes B;
+				B.instruction_ptr = instruction_pointer;
+				B.instruction = "op_writeln";
+				B.value = "";
+				B.token = cur_token;
 				instruction_list.insert(ittt, B);
 				instruction_pointer += 1;
 			}
@@ -259,13 +290,96 @@ void statements(int & cur_token, Token & new_tk, std::list<Token>& token_list, s
 			return;
 		}
 
+		if (match(cur_token, TK_ELSE)) {
+			return;
+		}
+
 		if (cur_token == TK_END)
 			break;
 
 		new_tk = token_list.front();
 		token_list.pop_front();
 		cur_token = new_tk.token_Type;
+	}
 
+}
+
+void if_else(int & cur_token, Token & new_tk, std::list<Token>& token_list, std::list<decoraded_nodes>& instruction_list, std::list<decoraded_nodes>::iterator & ittt, int & instruction_pointer) {
+	logic(cur_token, new_tk, token_list, instruction_list, ittt, instruction_pointer);
+	
+	cout << "-------> " << cur_token << endl;
+
+	if (match(cur_token, TK_THEN)) {
+		cout << "IN THEN\n";
+		new_tk = token_list.front();
+		token_list.pop_front();
+		cur_token = new_tk.token_Type;
+
+		if (match(cur_token, TK_BEGIN)) {
+			cout << "IN BEGIN\n";
+			new_tk = token_list.front();
+			token_list.pop_front();
+			cur_token = new_tk.token_Type;
+
+			decoraded_nodes B;
+			B.instruction_ptr = instruction_pointer;
+			B.instruction = "op_jfalse";
+			B.value = "";
+			B.token = cur_token;
+			instruction_list.insert(ittt, B);
+			instruction_pointer += 1;
+			
+			statements(cur_token, new_tk, token_list, instruction_list, ittt, instruction_pointer);
+
+			for (std::list<decoraded_nodes>::iterator cur_instruc = instruction_list.begin(), 
+				end = instruction_list.end(); 
+				cur_instruc != end; 
+				++cur_instruc) {
+				if (cur_instruc->instruction_ptr == B.instruction_ptr) {
+					cur_instruc->value =  std::to_string(instruction_pointer);
+				}
+			}
+
+			B.value = instruction_pointer;
+
+			if (match(cur_token, TK_ELSE)) {
+				// cout << "IN ELSE\n";
+				new_tk = token_list.front();
+				token_list.pop_front();
+				cur_token = new_tk.token_Type;
+
+				if (match(cur_token, TK_BEGIN)) {
+					// cout << "IN BEGIN\n";
+					new_tk = token_list.front();
+					token_list.pop_front();
+					cur_token = new_tk.token_Type;
+
+					decoraded_nodes C;
+					C.instruction_ptr = instruction_pointer;
+					C.instruction = "op_jmp";
+					C.value = "";
+					C.token = cur_token;
+					instruction_list.insert(ittt, C);
+					instruction_pointer += 1;
+
+					statements(cur_token, new_tk, token_list, instruction_list, ittt, instruction_pointer);
+
+					if (match(cur_token, TK_END)) {
+						// cout << "IN END\n";
+
+						for (std::list<decoraded_nodes>::iterator cur_instruc = instruction_list.begin(), 
+							end = instruction_list.end(); 
+							cur_instruc != end; 
+							++cur_instruc) {
+							if (cur_instruc->instruction_ptr == C.instruction_ptr) {
+								cur_instruc->value =  std::to_string(instruction_pointer);
+							}
+						}
+
+					}
+				}
+			}
+		}
 	}
 
 }
@@ -291,8 +405,63 @@ void repeat(int & cur_token, Token & new_tk, std::list<Token>& token_list, std::
 	}
 }
 
+void writeln(int & cur_token, Token & new_tk, std::list<Token>& token_list, std::list<decoraded_nodes>& instruction_list, std::list<decoraded_nodes>::iterator & ittt, int & instruction_pointer) {
+	// cout << "in writeln \n" << cur_token;
+
+	if (match(cur_token, TK_OPEN_PAREN)) {
+		// cout << "matched open paren \n";
+		new_tk = token_list.front();
+		token_list.pop_front();
+		cur_token = new_tk.token_Type;
+		// cout << cur_token;
+		if (match(cur_token, TK_SINGLE_QUOTE)) {
+			// cout << "matched TK_SINGLE_QUOTE \n";
+			
+			new_tk = token_list.front();
+			token_list.pop_front();
+			cur_token = new_tk.token_Type;
+
+			logic(cur_token, new_tk, token_list, instruction_list, ittt, instruction_pointer);
+
+			if (match(cur_token, TK_SINGLE_QUOTE)) {
+				new_tk = token_list.front();
+				token_list.pop_front();
+				cur_token = new_tk.token_Type;
+			} else {
+				cout << "erro quote in writeln \n";
+			}
+
+		} else {
+			logic(cur_token, new_tk, token_list, instruction_list, ittt, instruction_pointer);
+		}
+
+		if (match(cur_token, TK_CLOSE_PAREN)) {
+			new_tk = token_list.front();
+			token_list.pop_front();
+			cur_token = new_tk.token_Type;
+			// cout <<"cur token -> " << cur_token <<endl; 
+			if (match(cur_token, TK_SEMICOLON)) {
+
+				decoraded_nodes B;
+				B.instruction_ptr = instruction_pointer;
+				B.instruction = "op_writeln";
+				B.value = "";
+				B.token = cur_token;
+				instruction_list.insert(ittt, B);
+				instruction_pointer += 1;
+				
+				new_tk = token_list.front();
+				token_list.pop_front();
+				cur_token = new_tk.token_Type;
+			}
+		}
+
+	}
+}
+
 void logic(int & cur_token, Token & new_tk, std::list<Token>& token_list, std::list<decoraded_nodes>& instruction_list, std::list<decoraded_nodes>::iterator & ittt, int & instruction_pointer) {
-	
+	// cout << "cur token " << cur_token <<endl; 
+
 	int save = cur_token;
 	Token save_token = new_tk;
 
@@ -321,7 +490,31 @@ void logic(int & cur_token, Token & new_tk, std::list<Token>& token_list, std::l
 			instruction_list.insert(ittt, B);
 			instruction_pointer += 1;
 		}
-
+	} else if (match(cur_token, TK_LESS)) {
+		op = false;
+		new_tk = token_list.front();
+		token_list.pop_front();
+		cur_token = new_tk.token_Type;
+		
+		if (match(cur_token, TK_SEMICOLON)) {
+			E(cur_token, new_tk, token_list, instruction_list, ittt, instruction_pointer);
+			decoraded_nodes B;
+			B.instruction_ptr = instruction_pointer;
+			B.instruction = "op_less";
+			B.value = "less";
+			B.token = cur_token;
+			instruction_list.insert(ittt, B);
+			instruction_pointer += 1;
+		} else {
+			E(cur_token, new_tk, token_list, instruction_list, ittt, instruction_pointer);
+			decoraded_nodes B;
+			B.instruction_ptr = instruction_pointer;
+			B.instruction = "op_less";
+			B.value = "less";
+			B.token = save;
+			instruction_list.insert(ittt, B);
+			instruction_pointer += 1;
+		}
 	} else {
 		E(cur_token, new_tk, token_list, instruction_list, ittt, instruction_pointer);
 	}
@@ -435,14 +628,30 @@ void F(int & cur_token, Token & new_tk, std::list<Token>& token_list, std::list<
 	
 		return;
 
-	} else {
+	} else if (match(cur_token, TK_STR_LIT)) {
+		
+		decoraded_nodes I;
+		I.instruction_ptr = instruction_pointer;
+		I.instruction = "op_push";
+		I.value = new_tk.token_Name;
+		I.token = cur_token;
+		instruction_list.insert(ittt, I);
+		instruction_pointer += 1;
+
+		new_tk = token_list.front();
+		token_list.pop_front();
+		cur_token = new_tk.token_Type;				
+	
+		return;
+
+	}
+	else {
 		return;
 	}
 
 }
 
-void T_prime(int & cur_token, Token & new_tk, std::list<Token>& token_list, std::list<decoraded_nodes>& instruction_list, std::list<decoraded_nodes>::iterator & ittt, int & instruction_pointer) {
-	
+void T_prime(int & cur_token, Token & new_tk, std::list<Token>& token_list, std::list<decoraded_nodes>& instruction_list, std::list<decoraded_nodes>::iterator & ittt, int & instruction_pointer) {	
 	int save = cur_token;
 	Token save_token = new_tk;
 
@@ -493,6 +702,32 @@ void T_prime(int & cur_token, Token & new_tk, std::list<Token>& token_list, std:
 			B.instruction_ptr = instruction_pointer;
 			B.instruction = "op_greater";
 			B.value = "greater";
+			B.token = save;
+			instruction_list.insert(ittt, B);
+			instruction_pointer += 1;
+		}
+
+	} else if (match(cur_token, TK_LESS)) {
+		op = false;
+		new_tk = token_list.front();
+		token_list.pop_front();
+		cur_token = new_tk.token_Type;
+		
+		if (match(cur_token, TK_SEMICOLON)) {
+			E(cur_token, new_tk, token_list, instruction_list, ittt, instruction_pointer);
+			decoraded_nodes B;
+			B.instruction_ptr = instruction_pointer;
+			B.instruction = "op_less";
+			B.value = "less";
+			B.token = cur_token;
+			instruction_list.insert(ittt, B);
+			instruction_pointer += 1;
+		} else {
+			E(cur_token, new_tk, token_list, instruction_list, ittt, instruction_pointer);
+			decoraded_nodes B;
+			B.instruction_ptr = instruction_pointer;
+			B.instruction = "op_less";
+			B.value = "less";
 			B.token = save;
 			instruction_list.insert(ittt, B);
 			instruction_pointer += 1;
